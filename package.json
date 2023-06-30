@@ -1,0 +1,49 @@
+{
+  "name": "@basic-ui/root",
+  "version": "0.0.0",
+  "packageManager": "yarn@3.6.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "components/react/*",
+    "storybook"
+  ],
+  "scripts": {
+    "postinstall": "husky install",
+    "lint": "eslint --cache \"./**/*.{js,mjs,ts,tsx}\"",
+    "format": "echo \"Formatting with Prettier:\" && prettier --cache --cache-location=.prettier-cache --write \"**/*.{mjs,ts,tsx}\"",
+    "format:check": "echo \"Checking format with Prettier:\" && prettier --check \"**/*.{mjs,ts,tsx}\"",
+    "components:typecheck": "cd $INIT_CWD && tsc --noEmit",
+    "typecheck": "yarn workspaces foreach -p --no-private run components:typecheck",
+    "components:build": "node ./scripts/build.mjs $INIT_CWD",
+    "build": "yarn lint && yarn workspaces foreach -pt --no-private run components:build",
+    "components:watch": "node ./scripts/watch.mjs $INIT_CWD",
+    "watch": "yarn workspaces foreach -pi --no-private run components:watch",
+    "workshop": "yarn workspace @basic-ui/workshop run sb:dev",
+    "workshop-build": "yarn workspace @basic-ui/workshop run sb:build"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.6.6",
+    "@commitlint/config-conventional": "^17.6.6",
+    "@typescript-eslint/eslint-plugin": "^5.60.1",
+    "@typescript-eslint/parser": "^5.60.1",
+    "esbuild": "^0.18.10",
+    "eslint": "^8.43.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-storybook": "latest",
+    "eslint-plugin-unicorn": "^47.0.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.3",
+    "prettier": "^2.8.8",
+    "typescript": "^5.1.5"
+  },
+  "lint-staged": {
+    "*.{js,mjs,ts,tsx}": [
+      "eslint --cache",
+      "prettier --cache --cache-location=.prettier-cache --write"
+    ]
+  }
+}

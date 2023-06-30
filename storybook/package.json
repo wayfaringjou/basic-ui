@@ -1,0 +1,32 @@
+{
+  "name": "@basic-ui/workshop",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "storybook-dev": "storybook dev -p 6006 --no-open --disable-telemetry",
+    "storybook-build": "storybook build",
+    "sb:dev": "node scripts/serve.mjs",
+    "sb:build": "node scripts/serve.mjs"
+  },
+  "devDependencies": {
+    "@storybook/addon-a11y": "^7.0.24",
+    "@storybook/addon-essentials": "^7.0.24",
+    "@storybook/addon-interactions": "^7.0.24",
+    "@storybook/blocks": "^7.0.24",
+    "@storybook/builder-vite": "^7.0.24",
+    "@storybook/react": "^7.0.24",
+    "@storybook/react-vite": "^7.0.24",
+    "@storybook/testing-library": "^0.2.0",
+    "@types/react": "^18.2.14",
+    "inquirer": "^9.2.7",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "storybook": "^7.0.24",
+    "typescript": "^5.1.5",
+    "vite": "^4.3.9"
+  },
+  "dependencies": {
+    "@basic-ui/react-accordion": "workspace:*"
+  }
+}
