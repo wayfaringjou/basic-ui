@@ -32,7 +32,9 @@
           "error",
           {
             "replacements": {
-              "props": false
+              "props": false,
+              "ref": false,
+              "args": false
             }
           }
         ]
@@ -48,7 +50,7 @@
 
           "plugins": ["jsx-a11y"],
           "rules": {
-            "no-unused-vars": ["error", { "varsIgnorePattern": "^React" }],
+            "no-unused-vars": ["off"],
             "@typescript-eslint/no-unused-vars": [
               "error",
               { "varsIgnorePattern": "^React" }

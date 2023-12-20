@@ -1,0 +1,58 @@
+import { Canvas, Meta } from "@storybook/blocks";
+
+import Slot, { Default } from "./Slot.stories";
+
+<Meta of={Slot} />
+
+# Slot
+
+This component is inspired by the behavior of slots in
+[Web Components](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSlotElement) and [Svelte](https://svelte.dev/tutorial/named-slots).
+
+## In web Components
+
+```html
+<template id="my-paragraph">
+  <slot name="paragraph"><p>Default slot paragraph</p></slot>
+</template>
+```
+
+```html
+<my-paragraph>
+  <span slot="paragraph">Let's have some different text!</span>
+</my-paragraph>
+```
+
+## In Svelte
+
+```html
+<!-- Name.svelte -->
+<h2>
+  <slot name="name">
+    <span>Unknown name</span>
+  </slot>
+</h2>
+```
+
+```jsx
+<Name>
+  <p slot="name">Dr. Farnsworth</p>
+</Name>
+```
+
+# My ideas
+- Child has an implicit prop like "v-slot" (not clear)
+- Component provides props to children implicitly
+
+```jsx
+<Combobox>
+    <Combobox.Input>
+        <Slot name="input">
+            <input type="text"></input>
+        </Slot>
+    </Combobox.Input>
+    <Combobox.Popup>
+</Combobox>
+```
+
+<Canvas of={Default} />

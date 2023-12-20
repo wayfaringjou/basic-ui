@@ -28,6 +28,7 @@ const result = await esbuild
     packages: "external",
     metafile: true,
     color: true,
+    keepNames: true,
   })
   .catch(() => process.exit(1));
 

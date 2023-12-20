@@ -1,0 +1,34 @@
+{
+  "name": "@basic-ui/react-combobox",
+  "packageManager": "yarn@3.6.0",
+  "version": "0.1.0",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": "./dist/index.mjs"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "peerDependencies": {
+    "@types/react": "*",
+    "react": "^18.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.14",
+    "react": "^18.2.0"
+  },
+  "eslintConfig": {
+    "settings": {
+      "react": {
+        "version": "detect"
+      }
+    }
+  }
+}

@@ -25,6 +25,7 @@ const buildContext = await esbuild.context({
   packages: "external",
   metafile: true,
   color: true,
+  keepNames: true,
 });
 
 buildContext.watch();
@@ -40,7 +41,8 @@ try {
       if (error) {
         console.error(`\u001B[0m ${error}\u001B[0m`);
         console.error(`\u001B[${colorCode}m ${stderr || stdout}\u001B[0m`);
-        return;
+        throw error;
+        //return;
       }
       if (stdout) {
         console.log(`\u001B[0m${stdout} \u001B[0m`);

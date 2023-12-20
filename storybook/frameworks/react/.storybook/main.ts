@@ -6,9 +6,9 @@ const config: StorybookConfig = {
     name: path.dirname(
       require.resolve(path.join("@storybook/react-vite", "package.json"))
     ) as "@storybook/react-vite",
-    options: {},
+    options: { strictMode: true },
   },
-  stories: ["../*.mdx", "../*.stories.@(js|jsx|ts|tsx)"],
+  stories: ["../**/*.mdx", "../**/*.stories.@(js|jsx|ts|tsx)"],
   addons: [
     path.dirname(
       require.resolve(path.join("@storybook/addon-essentials", "package.json"))

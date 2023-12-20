@@ -1,0 +1,30 @@
+import { Canvas, Meta } from "@storybook/blocks";
+
+import * as ComboboxStories from "./Combobox.stories";
+
+<Meta of={ComboboxStories} />
+
+# Combobox
+
+A combobox is an **input** widget with an associated **popup** that enables users to select a value for the 
+combobox from a collection of possible values.
+
+## Composition
+ - Input widget: 
+    - `input` element.
+ - Popup:
+    - `Listbox` [Component](?path=/docs/listbox--docs) - [Aria APG](https://www.w3.org/WAI/ARIA/apg/patterns/listbox/)
+    - `Grid` [Component](?path=/docs/grid--docs) - [Aria APG](https://www.w3.org/WAI/ARIA/apg/patterns/grid/)
+    - `Tree` [Component](?path=/docs/tree--docs) - [Aria APG](https://www.w3.org/WAI/ARIA/apg/patterns/treeview/)
+    - `Dialog` [Component](?path=/docs/dialog--docs) - [Aria APG](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)
+
+
+
+1. No autocomplete: The combobox is editable, and when the popup is triggered, the suggested values it contains are the same regardless of the characters typed in the combobox. For example, the popup suggests a set of recently entered values, and the suggestions do not change as the user types.
+   <Canvas of={ComboboxStories.NoAutocomplete} />
+2. List autocomplete with manual selection: When the popup is triggered, it presents suggested values. If the combobox is editable, the suggested values complete or logically correspond to the characters typed in the combobox. The character string the user has typed will become the value of the combobox unless the user selects a value in the popup.
+   <Canvas of={ComboboxStories.ManualSelectAutocomplete} />
+3. List autocomplete with automatic selection: The combobox is editable, and when the popup is triggered, it presents suggested values that complete or logically correspond to the characters typed in the combobox, and the first suggestion is automatically highlighted as selected. The automatically selected suggestion becomes the value of the combobox when the combobox loses focus unless the user chooses a different suggestion or changes the character string in the combobox.
+   <Canvas of={ComboboxStories.AutoSelectAutocomplete} />
+4. List with inline autocomplete: This is the same as list with automatic selection with one additional feature. The portion of the selected suggestion that has not been typed by the user, a completion string, appears inline after the input cursor in the combobox. The inline completion string is visually highlighted and has a selected state.
+   <Canvas of={ComboboxStories.InlineAutocomplete} />
