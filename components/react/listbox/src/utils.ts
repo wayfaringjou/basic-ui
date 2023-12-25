@@ -1,4 +1,3 @@
-import type { OptionLinkedList } from "./option-linked-list";
 import type {
   Dispatch,
   ForwardedRef,
@@ -7,14 +6,15 @@ import type {
   MutableRefObject,
   SetStateAction,
 } from "react";
+import { OptionList } from "./option-list";
 
 /**
  * Pipes fowarded ref and local ref to assign both to current
  */
 export function sharedRef<T>(
-  node: T | null,
+  node: T | undefined,
   ref: ForwardedRef<T>,
-  _ref?: MutableRefObject<T | null>
+  _ref?: MutableRefObject<T | undefined>
 ) {
   if (node && ref) {
     if (typeof ref === "function") {
@@ -45,21 +45,17 @@ export function callAll<Args extends unknown[]>(
   };
 }
 
-// interface CallBack<Params extends any[]> {
-//   (...args: Params): void;
-// }
-
-// export const callAll =
-//   <Params extends any[]>(...fns: Array<CallBack<Params> | undefined>) =>
-//   (...args: Params) =>
-//     fns.forEach((fn) => typeof fn === "function" && fn(...args));
-
 /**
  * Events reducers
  */
 
 export function clickReducer(
-  dispatch: Dispatch<SetStateAction<HTMLLIElement | undefined>>,
+  dispatch: Dispatch<
+    SetStateAction<{
+      selected: HTMLLIElement | undefined;
+      active: HTMLLIElement | undefined;
+    }>
+  >,
   action: {
     event: MouseEvent<HTMLUListElement>;
     listbox: HTMLUListElement | null;
@@ -68,68 +64,81 @@ export function clickReducer(
   const target = action.event.target as HTMLElement;
   const role = target.getAttribute("role");
   if (target !== action.listbox && role === "option") {
-    dispatch(target as HTMLLIElement);
+    dispatch((state) => ({ ...state, selected: target as HTMLLIElement }));
   }
 }
 
 export function keyDownReducer(
-  dispatch: Dispatch<SetStateAction<HTMLLIElement | undefined>>,
+  dispatch: Dispatch<
+    SetStateAction<{
+      selected: HTMLLIElement | undefined;
+      active: HTMLLIElement | undefined;
+    }>
+  >,
   action: {
     type: KeyboardEvent<HTMLUListElement>["key"];
     payload: {
-      optionMap: OptionLinkedList;
-      selectedNode: HTMLLIElement | undefined;
+      nodesStatus: {
+        active: HTMLLIElement | undefined;
+        selected: HTMLLIElement | undefined;
+      };
+      optionList: OptionList;
     };
   }
 ) {
-  const { optionMap, selectedNode } = action.payload;
-  if (optionMap.size() === 0) {
+  const {
+    nodesStatus: { active },
+    optionList,
+  } = action.payload;
+  if (optionList.size() === 0) {
     return;
   }
 
   switch (action.type) {
     case "ArrowDown": {
-      if (selectedNode === undefined) {
-        const firstOption = optionMap.first();
+      if (active === undefined) {
+        const firstOption = optionList.first();
         if (!firstOption) break;
 
-        dispatch(firstOption.element);
+        dispatch((state) => ({ ...state, active: firstOption }));
         break;
       } else {
-        const nextOption = optionMap.next(selectedNode.id);
+        const nextOption = optionList.next(active);
+
         if (!nextOption) break;
 
-        dispatch(nextOption.element);
+        dispatch((state) => ({ ...state, active: nextOption }));
       }
       break;
     }
     case "ArrowUp": {
-      if (selectedNode === undefined) {
-        const lastOption = optionMap.last();
+      if (active === undefined) {
+        const lastOption = optionList.last();
         if (!lastOption) break;
 
-        dispatch(lastOption.element);
+        dispatch((state) => ({ ...state, active: lastOption }));
         break;
       } else {
-        const previousOption = optionMap.prev(selectedNode.id);
+        const previousOption = optionList.prev(active);
         if (!previousOption) break;
 
-        dispatch(previousOption.element);
+        dispatch((state) => ({ ...state, active: previousOption }));
       }
       break;
     }
     case "Home": {
-      const firstOption = optionMap.first();
+      const firstOption = optionList.first();
       if (!firstOption) break;
 
-      dispatch(firstOption.element);
+      dispatch((state) => ({ ...state, active: firstOption }));
+
       break;
     }
     case "End": {
-      const lastOption = optionMap.last();
+      const lastOption = optionList.last();
       if (!lastOption) break;
 
-      dispatch(lastOption.element);
+      dispatch((state) => ({ ...state, active: lastOption }));
       break;
     }
     default: {

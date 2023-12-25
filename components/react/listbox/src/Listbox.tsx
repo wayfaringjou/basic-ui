@@ -1,12 +1,15 @@
 import * as React from "react";
 import Option from "./Option";
 import Group from "./Group";
-import { OptionLinkedList } from "./option-linked-list";
 import { callAll, clickReducer, keyDownReducer, sharedRef } from "./utils";
+import { OptionList } from "./option-list";
 
 interface ListboxConextType {
-  selectedNode: HTMLLIElement | undefined;
-  optionMap: React.MutableRefObject<OptionLinkedList>;
+  nodesStatus: {
+    active: HTMLLIElement | undefined;
+    selected: HTMLLIElement | undefined;
+  };
+  optionList: React.MutableRefObject<OptionList>;
 }
 
 const ListboxContext = React.createContext<ListboxConextType | undefined>(undefined);
@@ -22,26 +25,46 @@ export const useListbox = () => {
 type Ref = HTMLUListElement;
 
 export interface ListboxProps extends React.ComponentPropsWithoutRef<"ul"> {
-  onSelection?: (index: HTMLLIElement | undefined) => void;
+  onSelectionChange?: (target: HTMLLIElement) => void;
+  onActiveChange?: (target: HTMLLIElement) => void;
 }
 
 /**
  * Listbox Root
  */
 const Listbox = React.forwardRef<Ref, ListboxProps>(
-  ({ children, onSelection, onClick, onKeyDown, ...props }, ref) => {
-    const [selectedNode, setSelectedNode] = React.useState<HTMLLIElement>();
-    const selectedId = selectedNode?.id;
+  (
+    {
+      children,
+      onSelectionChange,
+      onActiveChange,
+      onClick,
+      onKeyDown,
+      onFocus,
+      onBlur,
+      ...props
+    },
+    ref
+  ) => {
+    const [nodesStatus, setNodesStatus] = React.useState<{
+      active: HTMLLIElement | undefined;
+      selected: HTMLLIElement | undefined;
+    }>({ active: undefined, selected: undefined });
 
-    // Use linked list map of li elements to track selection without index
-    const optionMap = React.useRef<OptionLinkedList>(new OptionLinkedList());
+    // Each option element is saved in this list to manage navigation and focus
+    const optionList = React.useRef<OptionList>(new OptionList());
 
     const _ref = React.useRef<HTMLUListElement | null>(null);
 
     React.useLayoutEffect(() => {
-      if (!onSelection) return;
-      onSelection(selectedNode);
-    }, [selectedId]);
+      if (!onSelectionChange || nodesStatus.selected === undefined) return;
+      onSelectionChange(nodesStatus.selected);
+    }, [nodesStatus.selected]);
+
+    React.useLayoutEffect(() => {
+      if (!onActiveChange || nodesStatus.active === undefined) return;
+      onActiveChange(nodesStatus.active);
+    }, [nodesStatus.active]);
 
     React.useEffect(() => {
       /**
@@ -54,32 +77,54 @@ const Listbox = React.forwardRef<Ref, ListboxProps>(
         throw new Error(
           "Listbox requires aria-labelledby or aria-label if not part of another widget."
         );
-    });
+    }, [props["aria-labelledby"], props["aria-label"]]);
 
     function handleKeyDown(event: React.KeyboardEvent<HTMLUListElement>) {
-      event.preventDefault();
-      keyDownReducer(setSelectedNode, {
-        type: event.key,
-        payload: { optionMap: optionMap.current, selectedNode },
-      });
+      const managedKeys = ["ArrowDown", "ArrowUp", "Home", "End"];
+
+      if (managedKeys.includes(event.key)) {
+        event.preventDefault();
+
+        keyDownReducer(setNodesStatus, {
+          type: event.key,
+          payload: {
+            nodesStatus,
+            optionList: optionList.current,
+          },
+        });
+      }
     }
 
     function handleClick(event: React.MouseEvent<HTMLUListElement>) {
       if (!_ref.current) return;
-      clickReducer(setSelectedNode, { event, listbox: _ref.current });
+      clickReducer(setNodesStatus, { event, listbox: _ref.current });
     }
+
+    const [isFocused, setIsFocused] = React.useState(false);
+
+    const handleOnFocus: React.FocusEventHandler<HTMLUListElement> = () => {
+      setIsFocused(true);
+    };
+    const handleOnBlur: React.FocusEventHandler<HTMLUListElement> = (event) => {
+      setIsFocused(false);
+      // If an element besides the Listbox or its options receives focus, clear active
+      if (!optionList.current.has(event.relatedTarget)) {
+        setNodesStatus((state) => ({ ...state, active: undefined }));
+      }
+    };
 
     return (
       <ul
         role="listbox"
-        aria-activedescendant={selectedId}
-        tabIndex={0}
+        onFocus={callAll(handleOnFocus, onFocus)}
+        onBlur={callAll(handleOnBlur, onBlur)}
+        tabIndex={isFocused ? -1 : 0}
         onKeyDown={callAll(handleKeyDown, onKeyDown)}
         onClick={callAll(handleClick, onClick)}
         ref={(node) => sharedRef(node, ref, _ref)}
         {...props}
       >
-        <ListboxContext.Provider value={{ selectedNode, optionMap }}>
+        <ListboxContext.Provider value={{ nodesStatus, optionList }}>
           {children}
         </ListboxContext.Provider>
       </ul>

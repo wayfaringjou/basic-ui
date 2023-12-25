@@ -31,18 +31,19 @@ const ListboxTemplate: Story = {
     const terms = Array.from({ length: options }).map(
       (_, index) => `Item ${index + 1}`
     );
-    const [selected, setSelected] = React.useState<HTMLLIElement>();
+    const [active, setActive] = React.useState<HTMLLIElement>();
     const [index, setIndex] = React.useState<string | null | undefined>("");
-    const ListboxRef = React.useRef(null);
+
     React.useEffect(() => {
-      setIndex(selected?.dataset.value);
-    }, [selected]);
+      setIndex(active?.dataset.value);
+    }, [active]);
+
     return (
       <>
         <h2 id="list-title">Items</h2>
         <Listbox
-          onSelection={setSelected}
-          ref={ListboxRef}
+          onActiveChange={setActive}
+          // ref={ListboxRef}
           aria-labelledby="list-title"
         >
           <Listbox.Group>
@@ -53,6 +54,7 @@ const ListboxTemplate: Story = {
             ))}
           </Listbox.Group>
         </Listbox>
+        <input type="text" />
         <pre data-testid="selected-value">Selected item: {index}</pre>
       </>
     );
@@ -73,36 +75,36 @@ export const SingleSelect: Story = {
       expect(document.activeElement).toBe(listbox);
     });
 
-    await step("Home key selects first element", async () => {
+    await step("Home key makes first element active", async () => {
       await user.keyboard("[Home]");
-      expect(options[0].getAttribute("aria-selected")).toBe("true");
+      expect(document.activeElement).toBe(options[0]);
       expect(valueViz.textContent).toBe("Selected item: Item 1");
     });
 
-    await step("End key selects last element", async () => {
+    await step("End key makes last element active", async () => {
       await user.keyboard("[End]");
-      expect(options.at(-1)?.getAttribute("aria-selected")).toBe("true");
+      expect(document.activeElement).toBe(options.at(-1));
     });
 
-    await step("Down key selects next element", async () => {
+    await step("Down key makes next element active", async () => {
       await user.keyboard("[Home]");
       await user.keyboard("[ArrowDown]");
       if (options.length < 2) {
-        expect(options.at(0)?.getAttribute("aria-selected")).toBe("true");
+        expect(document.activeElement).toBe(options[0]);
         expect(valueViz.textContent).toBe("Selected item: Item 1");
       } else {
-        expect(options.at(1)?.getAttribute("aria-selected")).toBe("true");
+        expect(document.activeElement).toBe(options.at(1));
         expect(valueViz.textContent).toBe("Selected item: Item 2");
       }
     });
 
-    await step("Up key selects previous element", async () => {
+    await step("Up key makes previous element active", async () => {
       await user.keyboard("[End]");
       await user.keyboard("[ArrowUp]");
       if (options.length < 2) {
-        expect(options.at(0)?.getAttribute("aria-selected")).toBe("true");
+        expect(document.activeElement).toBe(options.at(0));
       } else {
-        expect(options.at(-2)?.getAttribute("aria-selected")).toBe("true");
+        expect(document.activeElement).toBe(options.at(-2));
       }
     });
   },

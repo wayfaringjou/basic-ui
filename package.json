@@ -1,7 +1,7 @@
 {
   "name": "@basic-ui/root",
   "version": "0.0.0",
-  "packageManager": "yarn@3.6.0",
+  "packageManager": "yarn@4.0.2",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -15,11 +15,11 @@
     "format": "echo \"Formatting with Prettier:\" && prettier --cache --cache-location=.prettier-cache --write \"**/*.{mjs,ts,tsx}\"",
     "format:check": "echo \"Checking format with Prettier:\" && prettier --check \"**/*.{mjs,ts,tsx}\"",
     "components:typecheck": "cd $INIT_CWD && tsc --noEmit",
-    "typecheck": "yarn workspaces foreach -p --no-private run components:typecheck",
+    "typecheck": "yarn workspaces foreach --all -p --no-private run components:typecheck",
     "components:build": "echo $INIT_CWD && node ./scripts/build.mjs $INIT_CWD",
-    "build": "yarn lint && yarn workspaces foreach -pt --no-private run components:build",
+    "build": "yarn lint && yarn workspaces foreach --all -pt --no-private run components:build",
     "components:watch": "node ./scripts/watch.mjs $INIT_CWD",
-    "watch": "yarn workspaces foreach -pi --no-private run components:watch",
+    "watch": "yarn workspaces foreach --all -pi --no-private run components:watch",
     "workshop": "yarn workspace @basic-ui/workshop run sb:dev",
     "workshop-build": "yarn workspace @basic-ui/workshop run sb:build"
   },

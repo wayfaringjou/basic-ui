@@ -8,35 +8,39 @@ export interface OptionProps extends React.ComponentPropsWithoutRef<"li"> {
 }
 
 const Option = React.forwardRef<Ref, OptionProps>(
-  ({ children, id, dataValue, ...props }, ref) => {
-    const { selectedNode, optionMap } = useListbox();
-    const _ref = React.useRef<React.ElementRef<"li">>(null);
-    const selected = selectedNode?.id === id;
+  ({ children, dataValue, ...props }, ref) => {
+    const { nodesStatus, optionList } = useListbox();
+    // Element reference is used directly for evaluations instead of assigning ids.
+    const _ref = React.useRef<React.ElementRef<"li">>();
+    const selected =
+      nodesStatus.selected !== undefined && nodesStatus.selected === _ref.current;
+    const active =
+      nodesStatus.active !== undefined && nodesStatus.active === _ref.current;
 
-    React.useLayoutEffect(() => {
-      if (selected) {
-        _ref.current?.scrollIntoView({ block: "nearest", behavior: "auto" });
+    React.useEffect(() => {
+      if (active && _ref.current?.tabIndex === 0) {
+        _ref.current.focus();
       }
-    }, [selected]);
+    }, [active, _ref.current?.tabIndex]);
 
     return (
       <li
         role="option"
         aria-selected={selected}
-        id={id}
+        tabIndex={active ? 0 : -1}
         ref={(node) => {
           sharedRef(node, ref, _ref);
-          if (!id) throw new Error("Id is needed");
+
           if (node) {
-            optionMap.current.set(node);
+            optionList.current.set(node);
           } else {
-            const mappedNode = optionMap.current.get(id);
-            if (mappedNode) {
-              optionMap.current.delete(id);
+            if (_ref.current && optionList.current.has(_ref.current)) {
+              optionList.current.delete(_ref.current);
             }
           }
         }}
         data-selected={selected}
+        data-active={active}
         {...(dataValue && { "data-value": dataValue })}
         {...props}
       >
